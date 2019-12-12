@@ -1,6 +1,6 @@
 #include <Arduino.h>
 //Arnaud Schlumberger            ///   
-//Last revision: 23 November 2019///
+//Last revision: 12 December 2019///
 ////////////////////////////////////
 #include <Wire.h>
 double aX,aY,aZ;
@@ -43,27 +43,27 @@ void MPU_setup() {
   Wire.endTransmission();
 }
 
-void AccelerationReading(){
+void AccelerationReading(double &accX, double &accY, double &accZ){
   //Accelerometer Measurements are stored in Registers 59(3B[hex]) to 64(40[hex]), there are 2 registers per axis -> 2 byte/axis
   Wire.beginTransmission(MPU_addr); //Telling the MPU what registers we want to receive -> first register in the row
   Wire.write(0x3B);
   Wire.endTransmission();
   Wire.requestFrom(MPU_addr,6); //3axis*2bits=6bytes requested
-  aX = Wire.read()<<8|Wire.read();
-  aY = Wire.read()<<8|Wire.read();
-  aZ = Wire.read()<<8|Wire.read();
+  accX = Wire.read()<<8|Wire.read();
+  accY = Wire.read()<<8|Wire.read();
+  accZ = Wire.read()<<8|Wire.read();
 }
 
-void AngularAccelerationReading(){
+void AngularAccelerationReading(double &grX, double &grY, double &grZ){
   //Gyroscope measurements stored in registers 43(dec;67[hex]) to 48(dec;72[hex]), 2 registers per axis  -> 2bytes/axis
   //Same thing as in above function
   Wire.beginTransmission(MPU_addr);
   Wire.write(0x43);
   Wire.endTransmission(MPU_addr);
   Wire.requestFrom(MPU_addr,6);
-  gX = Wire.read()<<8|Wire.read();
-  gY = Wire.read()<<8|Wire.read();
-  gZ = Wire.read()<<8|Wire.read();
+  grX = Wire.read()<<8|Wire.read();
+  grY = Wire.read()<<8|Wire.read();
+  grZ = Wire.read()<<8|Wire.read();
 }
 
 void setup() {
@@ -74,8 +74,8 @@ void setup() {
 }
 
 void loop() {
-  AccelerationReading();
-  AngularAccelerationReading();
+  AccelerationReading(aX, aY, aZ);
+  AngularAccelerationReading(gX,gY,gZ);
   Serial.print("Z axis acceleration: ");
   Serial.print(aZ/16384);
   Serial.println(" g");
